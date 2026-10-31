@@ -391,5 +391,5 @@ bubble_scene = ExtResource("3_jyhfs")
 
 [node name="BShooter" parent="." unique_id=1575682664 instance=ExtResource("4_jyhfs")]
 position = Vector2(674, 827)
-shoot_delay = 1
+shoot_delay = 0.1
 shoot_on_start = true

@@ -19,7 +19,7 @@ const AIM_DIRECTIONS: Dictionary = {
 } 
 
 @export var projectile: PackedScene
-@export var shoot_delay: int
+@export var shoot_delay: float
 @export var shoot_on_start: bool = false
 #@export var direction: Vector2 = AIM_DIRECTIONS["up"]
 @export_enum("up", "up_right", "right", \
@@ -32,7 +32,6 @@ func _ready() -> void:
 	$Delay.wait_time = shoot_delay
 	if shoot_on_start:
 		activate(Modes.CONTINUOUS_SHOOT)
-		
 
 func activate(mode: Modes) -> void:
 	state = mode
