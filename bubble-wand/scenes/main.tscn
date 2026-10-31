@@ -369,7 +369,8 @@ texture = ExtResource("3_sugp2")
 7:6/0/terrains_peering_bit/top_side = 0
 
 [sub_resource type="TileSet" id="TileSet_vf4q7"]
-physics_layer_0/collision_layer = 3
+physics_layer_0/collision_layer = 2
+physics_layer_0/collision_mask = 0
 terrain_set_0/mode = 0
 terrain_set_0/terrain_0/name = "ProtoGround"
 terrain_set_0/terrain_0/color = Color(0.5, 0.34375, 0.25, 1)
@@ -385,6 +386,4 @@ tile_set = SubResource("TileSet_vf4q7")
 
 [node name="Player" parent="." unique_id=1032884401 instance=ExtResource("1_0wfyh")]
 position = Vector2(115, 384)
-collision_layer = 1
 bubble_scene = ExtResource("3_jyhfs")
-GRAVITY = 1400
