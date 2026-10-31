@@ -1,12 +1,12 @@
 extends CharacterBody2D
 @export var bubble_scene: PackedScene
 const MAX_SPEED = 500.0
-const GROUND_ACCELERATION = 2200.0
-const AIR_ACCELERATION = 1400.0
+const GROUND_ACCELERATION = 2400.0
+const AIR_ACCELERATION = 2200.0
 const GROUND_FRICTION = 1000.0
-const AIR_FRICTION = 100.0
+const AIR_FRICTION = 400.0
 const GRAVITY = 2000
-const JUMP_VELOCITY = -950.0
+const JUMP_VELOCITY = -1000.0
 const JUMP_CUTOFF = -200.0
 
 const JUMP_BUFFER_TIME = 0.15
@@ -14,14 +14,16 @@ const COYOTE_TIME = 0.1
 
 var jump_buffer_timer = 0.0
 var coyote_timer = 0.0
-
 const BUBBLE_JUMP_GRACE_TIME = 0.15
 var bubble_jump_grace_timer = 0.0
 var bubble_jump_active = false
 const SHOOT_COOLDOWN = 0.5
 var shoot_cooldown_timer = 0.0
-
 var facing_direction = 1
+
+func _ready() -> void:
+	add_to_group("player")
+
 
 func _physics_process(delta: float) -> void:
 	# Add gravity
@@ -29,8 +31,9 @@ func _physics_process(delta: float) -> void:
 		velocity.y += GRAVITY * delta
 		if velocity.y > 700:
 			velocity.y = 700
-		if Input.is_action_pressed("ui_down") and velocity.y > 0:
-			velocity.y += GRAVITY * 1.2 * delta
+		#float more while falling down if holding jump
+		if Input.is_action_pressed("jump") and velocity.y > 0:
+			velocity.y -= GRAVITY * .2 * delta
 	if bubble_jump_grace_timer > 0:
 		bubble_jump_grace_timer -= delta
 
@@ -92,13 +95,19 @@ func _physics_process(delta: float) -> void:
 			0,
 			friction * delta
 		)
+		
 	if shoot_cooldown_timer > 0:
 		shoot_cooldown_timer -= delta
 	if Input.is_action_just_pressed("Shoot"):
 		shoot_bubble()
 
 	move_and_slide()
-	
+	for i in range(get_slide_collision_count()):
+		var collision = get_slide_collision(i)
+		
+
+
+
 func shoot_bubble() -> void:
 	#cooldown
 	if shoot_cooldown_timer > 0:
