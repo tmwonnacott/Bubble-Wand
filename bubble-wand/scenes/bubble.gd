@@ -1,3 +1,4 @@
+
 extends CharacterBody2D
 
 @export var SPEED = 600.0
@@ -5,81 +6,91 @@ const PLAYER_IMMUNITY_TIME = 0.15
 
 var direction := Vector2.ZERO
 var immunity_timer := PLAYER_IMMUNITY_TIME
+var player: CharacterBody2D
+var facing_right := true
+var hitbox_offset: float
+
+@onready var sprite: Sprite2D = $Sprite2D
+@onready var wallcollision: CollisionShape2D = $WallCollision
+@onready var playercollision: Area2D = $PlayerCollision
 
 
 func _ready() -> void:
 	add_to_group("bubble")
-	#area2dcollision is what's detected by the player
-	#this makes it so you don't spawn in the bubble immediately
-	$Area2D/CollisionShape2D.disabled = true
+
+	player = get_tree().get_first_node_in_group("player")
+
+	hitbox_offset = abs(playercollision.position.x)
+
+	# Disable player detection during initial immunity.
+	playercollision.monitoring = false
+
+	# Connect player detection.
+	playercollision.body_entered.connect(_on_player_collision_body_entered)
 
 
 func _physics_process(delta: float) -> void:
-	# Give the player a short period where the bubble cannot collide
-	# with them after being spawned.
-	var current_speed=SPEED
+
+	# Flip sprite and player hitbox based on direction.
+	if direction.x > 0:
+		facing_right = true
+	elif direction.x < 0:
+		facing_right = false
+
+	sprite.scale.x = 1 if facing_right else -1
+
+	playercollision.position.x = (
+		hitbox_offset if facing_right else -hitbox_offset
+	)
+
+	# Immunity timer and temporary speed boost.
+	var current_speed = SPEED
+
 	if immunity_timer > 0:
-		current_speed += 100
+		current_speed += 200
 		immunity_timer -= delta
+
 		if immunity_timer <= 0:
-			$Area2D/CollisionShape2D.disabled = false
+			playercollision.monitoring = true
 
 	velocity = direction * current_speed
+
+	# WALL COLLISION ONLY.
 	var collision = move_and_collide(velocity * delta)
 
 	if collision:
 		var normal = collision.get_normal()
 
-		# Bubble hit a wall or other object
+		print("Wall collision normal: ", normal)
+
 		direction = direction.bounce(normal)
 
 
-func _on_area_2d_body_entered(body: Node2D) -> void:
-	if body.name == "Player":
-		# Player collision rectangle
-		var player_collision = body.get_node("CollisionShape2D")
-		var player_shape = player_collision.shape
+# PLAYER COLLISION ONLY.
+func _on_player_collision_body_entered(body: Node2D) -> void:
 
-		var player_half_width = player_shape.size.x * player_collision.scale.x / 2.0
-		var player_half_height = player_shape.size.y * player_collision.scale.y / 2.0
+	if not body.is_in_group("player"):
+		return
 
-		var player_left = body.global_position.x - player_half_width
-		var player_right = body.global_position.x + player_half_width
-		var player_top = body.global_position.y - player_half_height
-		var player_bottom = body.global_position.y + player_half_height
+	var difference = body.global_position - global_position
 
-		# Bubble collision rectangle
-		var bubble_shape = $Area2D/CollisionShape2D.shape
-		var bubble_half_width = bubble_shape.size.x / 2.0
-		var bubble_half_height = bubble_shape.size.y / 2.0
+	print("Player hit direction: ", difference)
 
-		var bubble_left = global_position.x - bubble_half_width
-		var bubble_right = global_position.x + bubble_half_width
-		var bubble_top = global_position.y - bubble_half_height
-		var bubble_bottom = global_position.y + bubble_half_height
+	# Determine whether the player hit horizontally or vertically.
+	if difference.y < -30:
+		body.bounce_on_bubble()
 
-		# Calculate how much the rectangles overlap
-		var overlap_x = min(player_right, bubble_right) - max(player_left, bubble_left)
-		var overlap_y = min(player_bottom, bubble_bottom) - max(player_top, bubble_top)
+	elif abs(difference.x) > abs(difference.y):
 
-		# Smaller overlap tells us which side was hit
-		if overlap_y < overlap_x:
-			if body.global_position.y < global_position.y:
-				# Player hit the top
-				print("hit top")
-				body.bounce_on_bubble()
-			else:
-				# Player hit the bottom
-				print("hit bottom")
-				body.velocity.y = 100
+		# Horizontal hit.
+		if difference.x > 0:
+			body.velocity.x = 400
 		else:
-			if body.global_position.x < global_position.x:
-				# Player hit the left side
-				print("hit left")
-				body.velocity.x = velocity.x / 2 - 200
-			else:
-				# Player hit the right side
-				print("hit right")
-				body.velocity.x = velocity.x / 2 + 200
+			body.velocity.x = -400
 
-		queue_free()
+	else:
+
+		# Vertical hit from below.
+		body.velocity.y = 400
+
+	queue_free()
