@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dfg401g8ebhwy"]
+
+[ext_resource type="Texture2D" uid="uid://ks4mgsmxi1ox" path="res://assets/BubbleCatcher.png" id="1_lmnes"]
+[ext_resource type="Script" uid="uid://cnl6dkhfcqk4p" path="res://scenes/Environment/catcher_area.gd" id="2_477u2"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eae6q"]
+radius = 4.8166375
+
+[node name="BCatcher" type="Node2D" unique_id=1996702719]
+position = Vector2(3.637979e-12, 4.7683716e-07)
+scale = Vector2(5, 5)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=65503601]
+texture = ExtResource("1_lmnes")
+
+[node name="CatcherArea" type="Area2D" parent="." unique_id=768866863]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("2_477u2")
+
+[node name="CapturePoint" type="CollisionShape2D" parent="CatcherArea" unique_id=787162472]
+shape = SubResource("CircleShape2D_eae6q")

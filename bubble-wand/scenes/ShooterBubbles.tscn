@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://b00o4oh1p4wl2"]
+
+[ext_resource type="Script" uid="uid://b5vo231gqbh2b" path="res://scenes/bubble.gd" id="1_cd185"]
+[ext_resource type="Texture2D" uid="uid://cjpb7vdvyiqju" path="res://assets/Bubble.png" id="2_f60wr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rh3xb"]
+size = Vector2(18.666668, 14.666668)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_eae6q"]
+size = Vector2(14.666667, 14.666668)
+
+[node name="Bubble" type="CharacterBody2D" unique_id=443445720]
+scale = Vector2(3, 3)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_cd185")
+
+[node name="PlayerCollision" type="Area2D" parent="." unique_id=1444917431]
+position = Vector2(-6.357829e-07, 0)
+collision_layer = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerCollision" unique_id=1966730014]
+position = Vector2(5.5631006e-07, -1.0000002)
+shape = SubResource("RectangleShape2D_rh3xb")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=819048603]
+scale = Vector2(0.9, 0.90833336)
+texture = ExtResource("2_f60wr")
+
+[node name="WallCollision" type="CollisionShape2D" parent="." unique_id=813262561]
+shape = SubResource("RectangleShape2D_eae6q")
