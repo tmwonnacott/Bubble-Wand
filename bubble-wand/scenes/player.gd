@@ -127,14 +127,14 @@ func shoot_bubble() -> void:
 	
 
 	# Snap to one of 8 directions
-	for bubble in get_tree().get_nodes_in_group("bubble"):
+	for bubble in get_tree().get_nodes_in_group("player_bubble"):
 		bubble.queue_free()
 	var bubble = bubble_scene.instantiate()
-
+	bubble.add_to_group("player_bubble")
+	get_parent().add_child(bubble)
 	bubble.global_position = global_position + direction * 30.0
 	bubble.direction = direction
 
-	get_parent().add_child(bubble)
 	
 func bounce_on_bubble() -> void:
 	velocity.y = JUMP_VELOCITY

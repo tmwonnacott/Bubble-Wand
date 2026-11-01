@@ -51,6 +51,7 @@ func create_bubble_instance():
 	add_child(bubble_shot)
 	bubble_shot.global_position = $SpawnLocation.global_position
 	bubble_shot.direction = AIM_DIRECTIONS[direction]
+	bubble_shot.add_to_group("shooter_bubble")
 
 func _on_delay_timeout() -> void:
 	shoot()
